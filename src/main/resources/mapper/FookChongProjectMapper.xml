@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ivelite.fokchongdev.mapper.FookChongProjectMapper">
+
+    <select id="getProjectDetailById" parameterType="integer"
+            resultType="com.ivelite.fokchongdev.model.dto.ProjectDTO">
+        select id id,
+               project_id projectId,
+               project_description projectDescription,
+               project_building_style projectBuildingStyle,
+               project_cover_img projectCoverImg,
+               project_district projectDistrict,
+               project_area projectArea,
+               project_address projectAddress,
+               project_building_type projectBuildingType,
+               project_house_size projectHouseSize,
+               project_house_name projectHouseName,
+               creation_time creationTime,
+               has_img_comparison hasImgComparison,
+               has_featured hasFeatured,
+               is_show isShow,
+               project_build_time projectBuildTime
+
+        from fookchong.fookchong_project
+        where project_id = #{projectId}
+    </select>
+    <select id="getAllProjectsWithPage"  resultType="com.ivelite.fokchongdev.model.dto.ProjectDTO">
+        select id id,
+               project_id projectId,
+               project_description projectDescription,
+               project_building_style projectBuildingStyle,
+               project_cover_img projectCoverImg,
+               project_district projectDistrict,
+               project_area projectArea,
+               project_address projectAddress,
+               project_building_type projectBuildingType,
+               project_house_size projectHouseSize,
+               project_house_name projectHouseName,
+               project_build_time projectBuildTime,
+               creation_time creationTime,
+               has_img_comparison hasImgComparison,
+               has_featured hasFeatured
+        from fookchong.fookchong_project
+        order by id asc
+        limit #{pageSize} offset #{pageNum}
+    </select>
+    <select id="getProjectImgsById" resultType="java.lang.String">
+        select project_img_url
+        from fookchong.fookchong_project_img
+        where project_id = #{projectId}
+        order by id desc
+    </select>
+    <select id="getTotalProjectCount" resultType="java.lang.Integer">
+        SELECT COUNT(project_id) FROM fookchong.fookchong_project;
+
+    </select>
+    <select id="getAllProjects" resultType="com.ivelite.fokchongdev.model.dto.ProjectDTO">
+        select id id,
+               project_id projectId,
+               project_description projectDescription,
+               project_building_style projectBuildingStyle,
+               project_cover_img projectCoverImg,
+               project_district projectDistrict,
+               project_area projectArea,
+               project_address projectAddress,
+               project_building_type projectBuildingType,
+               project_house_size projectHouseSize,
+               project_house_name projectHouseName,
+               project_build_time projectBuildTime,
+               creation_time creationTime,
+               has_img_comparison hasImgComparison,
+               has_featured hasFeatured,
+               is_show isShow
+        from fookchong.fookchong_project
+    </select>
+    <select id="getBannerImages" resultType="java.lang.String">
+        select page_content
+        from fookchong.fookchong_page_config
+        where page_block like 'banner_img%';
+    </select>
+    <select id="getUserComments" resultType="java.lang.String">
+        select page_content
+        from fookchong.fookchong_page_config
+        where page_block like 'user_comment%';
+    </select>
+    <select id="getFeaturedProjects" resultType="com.ivelite.fokchongdev.model.dto.ProjectDTO">
+        select id id,
+               project_id projectId,
+               project_description projectDescription,
+               project_building_style projectBuildingStyle,
+               project_cover_img projectCoverImg,
+               project_district projectDistrict,
+               project_area projectArea,
+               project_address projectAddress,
+               project_building_type projectBuildingType,
+               project_house_size projectHouseSize,
+               project_house_name projectHouseName,
+               project_build_time projectBuildTime,
+               creation_time creationTime,
+               has_img_comparison hasImgComparison,
+               has_featured hasFeatured
+        from fookchong.fookchong_project
+        where has_featured = 1;
+    </select>
+    <insert id="insertNewProject" parameterType="com.ivelite.fokchongdev.model.param.ProjectParam">
+        INSERT INTO fookchong.fookchong_project
+        (project_id, project_description,project_building_style,project_cover_img,project_district,project_area,project_address,project_building_type,project_house_size,project_house_name,project_build_time,creation_time,has_featured)
+        VALUES
+        (
+         (select max(project_id) +1  from fookchong.fookchong_project), #{projectDesc}, #{projectBuildingStyle}, #{projectCoverImg}, #{projectDistrict}, #{projectArea}, #{projectAddress}, #{projectBuildingType}, #{projectHouseSize}, #{projectHouseName}, #{projectBuildTime}, now(), #{hasFeatured}
+        )
+    </insert>
+    <insert id="addProjectImages">
+        INSERT INTO fookchong.fookchong_project_img
+        (project_id, project_img_url)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                ${item.projectId}, #{item.projectImageUrl}
+            )
+        </foreach>
+    </insert>
+    <update id="hideProjectById">
+        UPDATE fookchong.fookchong_project
+        SET is_show = 0
+        WHERE project_id = #{projectId};
+    </update>
+    <update id="showProjectById">
+        UPDATE fookchong.fookchong_project
+        SET is_show = 1
+        WHERE project_id = #{projectId};
+    </update>
+    <update id="updateProject">
+        UPDATE fookchong.fookchong_project
+        SET project_description = #{projectDescription},
+            project_building_style  = #{projectBuildingStyle},
+            project_cover_img = #{projectCoverImg},
+            project_district = #{projectDistrict},
+            project_area = #{projectArea},
+            project_address = #{projectAddress},
+            project_building_type = #{projectBuildingType},
+            project_house_size = #{projectHouseSize},
+            project_house_name = #{projectHouseName},
+            project_build_time = #{projectBuildTime},
+            has_featured  = #{hasFeatured}
+        WHERE project_id = #{projectId};
+    </update>
+    <update id="updateBannerImageUrls">
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{banner_img_1}
+        WHERE page_block = 'banner_img_1';
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{banner_img_2}
+        WHERE page_block = 'banner_img_2';
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{banner_img_3}
+        WHERE page_block = 'banner_img_3';
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{banner_img_4}
+        WHERE page_block = 'banner_img_4';
+    </update>
+    <update id="updateUserComments">
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{user_comment_1}
+        WHERE page_block = 'user_comment_1';
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{user_comment_2}
+        WHERE page_block = 'user_comment_2';
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{user_comment_3}
+        WHERE page_block = 'user_comment_3';
+        UPDATE fookchong.fookchong_page_config
+        SET page_content = #{user_comment_4}
+        WHERE page_block = 'user_comment_4';
+    </update>
+    <update id="updateProjectImages">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE fookchong.fookchong_project_img
+            <set>
+                project_img_url = #{item.newUrl}
+            </set>
+            where project_id = #{item.projectId} and project_img_url = #{item.existingUrl}
+        </foreach>
+    </update>
+    <delete id="deleteProjectImages">
+        DELETE from fookchong.fookchong_project_img where project_img_url
+        <foreach collection="list" open="in( " item="item" separator="," close=")" >
+            #{item.projectImageUrl}
+        </foreach>;
+    </delete>
+
+</mapper>

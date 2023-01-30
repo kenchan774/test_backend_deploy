@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://ec2-52-23-131-232.compute-1.amazonaws.com:5432/demde0g2mjqn53
+    username: afxibwwfkembnq
+    password: 6d4a22de32af1884aacab236897bd1a1b6a84da3fe5b3a14f174addef433459e
+    driver-class-name: org.postgresql.Driver
+mybatis:
+  config-locations: classpath:mapper/FookChongProjectMapper.xml
+  config-location: classpath:mapper/mybatis-config.xml
